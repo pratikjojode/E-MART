@@ -7,36 +7,45 @@ import authRoutes from "./routes/authRoutes.js";
 import cors from "cors";
 import categoryRoutes from "./routes/categoryRoute.js";
 import productRoutes from "./routes/productRoutes.js";
-const PORT = process.env.PORT || 8080;
-const path = require("path");
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Load environment variables
 dotenv.config();
 connectDb();
 
-// rest object
+// Initialize express
 const app = express();
-// moragn middle
+const PORT = process.env.PORT || 8080;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-// static files
+// Convert import.meta.url to __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files
 app.use(express.static(path.join(__dirname, "./client/build")));
 
-// routes
+// API routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/products", productRoutes);
 
+// Fallback for serving the frontend
 app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
-// rest api
 
+// Root endpoint
 app.get("/", (req, res) => {
-  res.send("<h1>Hello welcome to the ecommerce app</h1>");
+  res.send("<h1>Hello, welcome to the e-commerce app</h1>");
 });
-// listent hre server
+
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`.bgBlack.white);
 });
